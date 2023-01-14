@@ -22,8 +22,8 @@ func main() {
 		"L": "50", "C": "100",
 	}
 
-	test := "1"
-	fmt.Println(romanCheck(test, roman))
+	//test := "1"
+	//fmt.Println(romanCheck(test, roman))
 	for {
 		fmt.Println("Введите значение")
 		input, _ := reader.ReadString('\n')
@@ -47,7 +47,7 @@ func main() {
 			if result == 99999 {
 				fmt.Println("Используйсте в примере арифметичесий оператор (+, -, *, /)")
 			} else {
-				fmt.Println(result, "roman")
+				fmt.Println(numToRoman(result), "roman")
 			}
 
 		case isNum1 == true && isNum2 == true:
@@ -63,15 +63,6 @@ func main() {
 				fmt.Println(result, "numeric")
 			}
 		}
-
-		//if isRoman1 == false || isRoman2 == false {
-		//	if isNum1 == true && isNum2 == true {
-		//
-		//	} else {
-		//		fmt.Println("Используйте пожалуйста римские или арабские числа от 1 до 10(от I до X)")
-		//	}
-		//}
-
 	}
 }
 
@@ -87,6 +78,44 @@ func counting(num1, num2 int, expression string) int {
 		return num1 / num2
 	}
 	return 99999
+}
+
+func numToRoman(num int) string {
+	numeric := map[int]string{
+		1: "I", 2: "II",
+		3: "III", 4: "IV",
+		5: "V", 6: "VI",
+		7: "VII", 8: "VIII",
+		9: "IX", 10: "X",
+		50: "L", 100: "C",
+	}
+	switch {
+	case num <= 10 || num == 100:
+		return numeric[num]
+	case num <= 39:
+		int1, int2 := separIntToArray(num)
+		output1 := strings.Repeat(numeric[10], int1)
+		return output1 + numeric[int2]
+	case num <= 49:
+		_, int2 := separIntToArray(num)
+		return numeric[10] + numeric[50] + numeric[int2]
+	case num <= 89:
+		int1, int2 := separIntToArray(num)
+		output1 := strings.Repeat(numeric[10], int1-5)
+		return numeric[50] + output1 + numeric[int2]
+	case num <= 99:
+		_, int2 := separIntToArray(num)
+		return numeric[10] + numeric[100] + numeric[int2]
+	}
+	return "0"
+}
+
+func separIntToArray(num int) (int, int) {
+	symb := strconv.Itoa(num)
+	list := strings.Split(symb, "")
+	int1, _ := strconv.Atoi(list[0])
+	int2, _ := strconv.Atoi(list[1])
+	return int1, int2
 }
 
 func romanCheck(num string, roman map[string]string) bool {
