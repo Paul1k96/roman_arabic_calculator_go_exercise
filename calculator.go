@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	//var numInput1, numInput2 string
-	var isRoman1, isRoman2, isNum1, isNum2 bool
-
+	var b = "\u001B[34m" // blue
+	var g = "\u001B[32m" // green
+	var r = "\u001B[31m" // red
 	reader := bufio.NewReader(os.Stdin)
 	roman := map[string]string{
 		"I": "1", "II": "2",
@@ -22,18 +22,39 @@ func main() {
 		"L": "50", "C": "100",
 	}
 
-	//test := "1"
-	//fmt.Println(romanCheck(test, roman))
+	// Output for users
+	fmt.Println("Добро пожаловать в калькулятор для арабских и римских чисел!")
+	fmt.Println("Калькулятор может обрабатывать только 2 целых числа от 1 до 10(от I до X) включительно. ")
+	fmt.Println("Оба числа должны быть " + clr(r, "ТОЛЬКО") + " арабскими, либо " + clr(r, "ТОЛЬКО") + " римскими.")
+	fmt.Println("Ввод данных осуществляется так:" + clr(g, "'число1'") +
+		clr(b, "'выражение'") + clr(g, "'число2'") + ", разделённые пробелами между собой.")
+	fmt.Println("Примеры: '" + clr(g, "10") + clr(b, " + ") + clr(g, "9") + "," +
+		clr(g, " V") + clr(b, " + ") + clr(g, "II"))
+	fmt.Println("Для выхода введите" + clr(r, " exit") + ".\n")
+	fmt.Println("Начнём работу!")
+out:
+
 	for {
-		fmt.Println("Введите значение")
+
+		fmt.Println("Введите пример:")
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimSpace(input)
-		list := strings.Split(input, " ")
 
-		isRoman1 = romanCheck(list[0], roman)
-		isRoman2 = romanCheck(list[2], roman)
-		isNum1 = numCheck(list[0], roman)
-		isNum2 = numCheck(list[2], roman)
+		if input == "exit" {
+			fmt.Println("Завершаю работу.")
+			break out
+		}
+
+		list := strings.Split(input, " ")
+		if len(list) != 3 {
+			fmt.Println("Ошибка: Числа и математическая операция должны быть разделены одиночным пробелом.")
+			continue
+		}
+
+		isRoman1 := romanCheck(list[0], roman)
+		isRoman2 := romanCheck(list[2], roman)
+		isNum1 := numCheck(list[0], roman)
+		isNum2 := numCheck(list[2], roman)
 
 		fmt.Println(isRoman1, isRoman2, isNum1, isNum2, list)
 		switch {
@@ -45,9 +66,11 @@ func main() {
 			// -----------------------------------------
 			result := counting(num1, num2, expression)
 			if result == 99999 {
-				fmt.Println("Используйсте в примере арифметичесий оператор (+, -, *, /)")
+				fmt.Println("Ошибка Используйте в примере арифметичесий оператор (+, -, *, /)")
+			} else if result <= 0 {
+				fmt.Println("Ошибка: При вычитании первая римская цифра не может быть меньше второй.")
 			} else {
-				fmt.Println(numToRoman(result), "roman")
+				fmt.Println(numToRoman(result))
 			}
 
 		case isNum1 == true && isNum2 == true:
@@ -58,10 +81,14 @@ func main() {
 			// -----------------------------------------
 			result := counting(num1, num2, expression)
 			if result == 99999 {
-				fmt.Println("Используйсте в примере арифметичесий оператор (+, -, *, /)")
+				fmt.Println("Используйте в примере арифметичесий оператор (+, -, *, /)")
 			} else {
-				fmt.Println(result, "numeric")
+				fmt.Println(result)
 			}
+		default:
+			fmt.Println("Ошибка: Оба числа должны быть целые в диапазоне I-X/1-10 и быть либо только римскими, либо только арабскими.")
+			fmt.Println("Завершаю работу.")
+			break out
 		}
 	}
 }
@@ -134,4 +161,9 @@ func numCheck(num string, roman map[string]string) bool {
 		}
 	}
 	return false
+}
+
+func clr(col, txt string) string {
+	var rst = "\u001B[0m" // reset
+	return col + txt + rst
 }
