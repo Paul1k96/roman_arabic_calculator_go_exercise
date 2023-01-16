@@ -9,45 +9,51 @@ import (
 )
 
 func main() {
+	reader := bufio.NewReader(os.Stdin)
+
 	var b = "\u001B[34m" // blue
 	var g = "\u001B[32m" // green
 	var r = "\u001B[31m" // red
-	reader := bufio.NewReader(os.Stdin)
+
 	roman := map[string]string{
 		"I": "1", "II": "2",
 		"III": "3", "IV": "4",
 		"V": "5", "VI": "6",
 		"VII": "7", "VIII": "8",
 		"IX": "9", "X": "10",
-		"L": "50", "C": "100",
 	}
 
 	// Output for users
+	fmt.Println("----------------------------------------------------------------------------------------------")
 	fmt.Println("Добро пожаловать в калькулятор для арабских и римских чисел!")
-	fmt.Println("Калькулятор может обрабатывать только 2 целых числа от 1 до 10(от I до X) включительно. ")
+	fmt.Println("Калькулятор может обрабатывать только 2" + clr(r, " ЦЕЛЫХ ") + "числа от 1 до 10(от I до X) включительно. ")
 	fmt.Println("Оба числа должны быть " + clr(r, "ТОЛЬКО") + " арабскими, либо " + clr(r, "ТОЛЬКО") + " римскими.")
 	fmt.Println("Ввод данных осуществляется так:" + clr(g, "'число1'") +
 		clr(b, "'выражение'") + clr(g, "'число2'") + ", разделённые пробелами между собой.")
-	fmt.Println("Примеры: '" + clr(g, "10") + clr(b, " + ") + clr(g, "9") + "," +
-		clr(g, " V") + clr(b, " + ") + clr(g, "II"))
-	fmt.Println("Для выхода введите" + clr(r, " exit") + ".\n")
+	fmt.Println("Примеры: '" + clr(g, "10") + clr(b, " + ") + clr(g, "9") + "', '" +
+		clr(g, "V") + clr(b, " + ") + clr(g, "II") + "'")
+	fmt.Println("Для выхода введите" + clr(r, " exit") + ".")
+	fmt.Println("----------------------------------------------------------------------------------------------\n")
 	fmt.Println("Начнём работу!")
-out:
 
+out:
 	for {
 
 		fmt.Println("Введите пример:")
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimSpace(input)
+		input = strings.ToUpper(input)
 
-		if input == "exit" {
+		// terminates the program
+		if input == "EXIT" {
 			fmt.Println("Завершаю работу.")
 			break out
 		}
 
 		list := strings.Split(input, " ")
+
 		if len(list) != 3 {
-			fmt.Println("Ошибка: Числа и математическая операция должны быть разделены одиночным пробелом.")
+			fmt.Println("Ошибка: Введите пожалуйста два числа и математическую операцию, разделённые одиночным пробелом.")
 			continue
 		}
 
@@ -56,7 +62,6 @@ out:
 		isNum1 := numCheck(list[0], roman)
 		isNum2 := numCheck(list[2], roman)
 
-		fmt.Println(isRoman1, isRoman2, isNum1, isNum2, list)
 		switch {
 		case isRoman1 == true && isRoman2 == true:
 			num1, _ := strconv.Atoi(roman[list[0]])
@@ -66,11 +71,11 @@ out:
 			// -----------------------------------------
 			result := counting(num1, num2, expression)
 			if result == 99999 {
-				fmt.Println("Ошибка Используйте в примере арифметичесий оператор (+, -, *, /)")
+				fmt.Println("Ошибка: Используйте в примере арифметичесий оператор (+, -, *, /)")
 			} else if result <= 0 {
-				fmt.Println("Ошибка: При вычитании первая римская цифра не может быть меньше второй.")
+				fmt.Println("Ошибка: При вычитании или делении первая римская цифра должна быть больше второй.")
 			} else {
-				fmt.Println(numToRoman(result))
+				fmt.Println("Ответ:", numToRoman(result))
 			}
 
 		case isNum1 == true && isNum2 == true:
@@ -81,12 +86,21 @@ out:
 			// -----------------------------------------
 			result := counting(num1, num2, expression)
 			if result == 99999 {
-				fmt.Println("Используйте в примере арифметичесий оператор (+, -, *, /)")
+				fmt.Println("Ошибка: Используйте в примере арифметичесий оператор (+, -, *, /).")
 			} else {
-				fmt.Println(result)
+				fmt.Println("Ответ:", result)
 			}
+		case (isNum1 || isNum2) && (isRoman1 || isRoman2):
+			fmt.Println("Ошибка: Операции между римскими и арабскими числами запрещены.")
+			break out
+		case isNum1 || isNum2:
+			fmt.Println("Ошибка: Было введено только одно арабское целое число от 1 до 10.")
+			break out
+		case isRoman1 || isRoman2:
+			fmt.Println("Ошибка: Было введено только одно римское число в диапазоне от I до X.")
+			break out
 		default:
-			fmt.Println("Ошибка: Оба числа должны быть целые в диапазоне I-X/1-10 и быть либо только римскими, либо только арабскими.")
+			fmt.Println("Ошибка: Оба числа должны быть целые в диапазоне I-X/1-10.")
 			fmt.Println("Завершаю работу.")
 			break out
 		}
@@ -94,6 +108,8 @@ out:
 }
 
 func counting(num1, num2 int, expression string) int {
+	// performs mathematical operations and returns the result
+
 	switch expression {
 	case "+":
 		return num1 + num2
@@ -108,6 +124,8 @@ func counting(num1, num2 int, expression string) int {
 }
 
 func numToRoman(num int) string {
+	// convert arabic number to roman number
+
 	numeric := map[int]string{
 		1: "I", 2: "II",
 		3: "III", 4: "IV",
@@ -138,6 +156,8 @@ func numToRoman(num int) string {
 }
 
 func separIntToArray(num int) (int, int) {
+	// divides a two-digit int into two parts and returns them as an int
+
 	symb := strconv.Itoa(num)
 	list := strings.Split(symb, "")
 	int1, _ := strconv.Atoi(list[0])
@@ -146,6 +166,8 @@ func separIntToArray(num int) (int, int) {
 }
 
 func romanCheck(num string, roman map[string]string) bool {
+	// checks if there is a variable 'num' in the keys in the 'roman' map and returns the flag
+
 	for k, _ := range roman {
 		if num == k {
 			return true
@@ -155,6 +177,8 @@ func romanCheck(num string, roman map[string]string) bool {
 }
 
 func numCheck(num string, roman map[string]string) bool {
+	// checks if there is a variable 'num' in the 'roman' map and returns the flag
+
 	for _, v := range roman {
 		if num == v {
 			return true
@@ -164,6 +188,8 @@ func numCheck(num string, roman map[string]string) bool {
 }
 
 func clr(col, txt string) string {
+	// returns the given text colored in the given color
+
 	var rst = "\u001B[0m" // reset
 	return col + txt + rst
 }
