@@ -43,7 +43,6 @@ out:
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimSpace(input) // stripping spaces and tabs from both ends of lines
 		input = strings.ToUpper(input)
-		fmt.Println(input)
 
 		// terminates the program
 		if input == "EXIT" {
