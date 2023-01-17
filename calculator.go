@@ -41,8 +41,9 @@ out:
 
 		fmt.Println("Введите пример:")
 		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
+		input = strings.TrimSpace(input) // stripping spaces and tabs from both ends of lines
 		input = strings.ToUpper(input)
+		fmt.Println(input)
 
 		// terminates the program
 		if input == "EXIT" {
@@ -52,18 +53,20 @@ out:
 
 		list := strings.Split(input, " ")
 
+		// check
 		if len(list) != 3 {
 			fmt.Println("Ошибка: Введите пожалуйста два числа и математическую операцию, разделённые одиночным пробелом.")
 			continue
 		}
 
+		// flags to check
 		isRoman1 := romanCheck(list[0], roman)
 		isRoman2 := romanCheck(list[2], roman)
 		isNum1 := numCheck(list[0], roman)
 		isNum2 := numCheck(list[2], roman)
 
 		switch {
-		case isRoman1 == true && isRoman2 == true:
+		case isRoman1 == true && isRoman2 == true: // if both numbers are roman
 			num1, _ := strconv.Atoi(roman[list[0]])
 			expression := list[1]
 			num2, _ := strconv.Atoi(roman[list[2]])
@@ -78,7 +81,7 @@ out:
 				fmt.Println("Ответ:", numToRoman(result))
 			}
 
-		case isNum1 == true && isNum2 == true:
+		case isNum1 == true && isNum2 == true: // if both numbers are arabic
 			num1, _ := strconv.Atoi(list[0])
 			expression := list[1]
 			num2, _ := strconv.Atoi(list[2])
@@ -86,21 +89,25 @@ out:
 			// -----------------------------------------
 			result := counting(num1, num2, expression)
 			if result == 99999 {
-				fmt.Println("Ошибка: Используйте в примере арифметичесий оператор (+, -, *, /).")
+				fmt.Println("Ошибка: Используйте в выражении арифметичесий оператор (+, -, *, /).")
 			} else {
 				fmt.Println("Ответ:", result)
 			}
-		case (isNum1 || isNum2) && (isRoman1 || isRoman2):
+
+		case (isNum1 || isNum2) && (isRoman1 || isRoman2): //  if one is Arabic and the other is Roman
 			fmt.Println("Ошибка: Операции между римскими и арабскими числами запрещены.")
 			break out
-		case isNum1 || isNum2:
+
+		case isNum1 || isNum2: // if only one arabic
 			fmt.Println("Ошибка: Было введено только одно арабское целое число от 1 до 10.")
 			break out
-		case isRoman1 || isRoman2:
+
+		case isRoman1 || isRoman2: // if only one roman
 			fmt.Println("Ошибка: Было введено только одно римское число в диапазоне от I до X.")
 			break out
+
 		default:
-			fmt.Println("Ошибка: Оба числа должны быть целые в диапазоне I-X/1-10.")
+			fmt.Println("Ошибка: Должны быть два целых в диапазоне I-X/1-10.")
 			fmt.Println("Завершаю работу.")
 			break out
 		}
@@ -138,28 +145,28 @@ func numToRoman(num int) string {
 	case num <= 10 || num == 100:
 		return numeric[num]
 	case num <= 39:
-		int1, int2 := separIntToArray(num)
+		int1, int2 := sepIntToArray(num)
 		output1 := strings.Repeat(numeric[10], int1)
 		return output1 + numeric[int2]
 	case num <= 49:
-		_, int2 := separIntToArray(num)
+		_, int2 := sepIntToArray(num)
 		return numeric[10] + numeric[50] + numeric[int2]
 	case num <= 89:
-		int1, int2 := separIntToArray(num)
+		int1, int2 := sepIntToArray(num)
 		output1 := strings.Repeat(numeric[10], int1-5)
 		return numeric[50] + output1 + numeric[int2]
 	case num <= 99:
-		_, int2 := separIntToArray(num)
+		_, int2 := sepIntToArray(num)
 		return numeric[10] + numeric[100] + numeric[int2]
 	}
 	return "0"
 }
 
-func separIntToArray(num int) (int, int) {
+func sepIntToArray(num int) (int, int) {
 	// divides a two-digit int into two parts and returns them as an int
 
-	symb := strconv.Itoa(num)
-	list := strings.Split(symb, "")
+	str := strconv.Itoa(num)
+	list := strings.Split(str, "")
 	int1, _ := strconv.Atoi(list[0])
 	int2, _ := strconv.Atoi(list[1])
 	return int1, int2
@@ -188,7 +195,7 @@ func numCheck(num string, roman map[string]string) bool {
 }
 
 func clr(col, txt string) string {
-	// returns the given text colored in the given color
+	// returns the received string in the received color
 
 	var rst = "\u001B[0m" // reset
 	return col + txt + rst
